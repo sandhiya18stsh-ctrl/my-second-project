@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Consultation Sentiment Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --secondary: #6c757d;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gov-blue: #034ea2;
+            --gov-red: #d04a4e;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--gov-blue) 0%, #1c71b8 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-bar {
+            background: linear-gradient(135deg, var(--gov-red) 0%, #e37c80 100%);
+            color: white;
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            border: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gov-blue);
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+        
+        #wordCloudImg {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            background-color: white;
+        }
+        
+        .comment {
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .sentiment-positive {
+            border-left: 4px solid var(--success);
+        }
+        
+        .sentiment-negative {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .sentiment-neutral {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            background-color: #e9ecef;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gov-blue) 0%, #1c71b8 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #02367d 0%, #155a90 100%);
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--gov-blue);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(3, 78, 162, 0.1) 0%, rgba(28, 113, 184, 0.1) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .sentiment-badge {
+            font-size: 0.8rem;
+            padding: 0.35rem 0.65rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-balance-scale me-2"></i>
+                Ministry of Corporate Affairs
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-envelope me-1"></i> Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Bar -->
+    <div class="header-bar">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2><i class="fas fa-comments me-2"></i> E-Consultation Sentiment Analysis</h2>
+                    <p class="mb-0">AI-powered analysis of stakeholder feedback on draft legislations</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-light" id="help-btn"><i class="fas fa-question-circle me-1"></i> Help</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3>Analyze Public Feedback with AI</h3>
+                    <p class="lead">Upload CSV files or enter comments manually to get instant sentiment analysis, summaries, and visualizations of stakeholder feedback.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <p>Sentiment Analysis</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-file-csv"></i>
+                            </div>
+                            <p>CSV Processing</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <p>Word Clouds</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="total-comments">0</div>
+                    <div class="stat-label">Total Comments</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="positive-comments">0</div>
+                    <div class="stat-label">Positive Sentiment</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="negative-comments">0</div>
+                    <div class="stat-label">Negative Sentiment</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="neutral-comments">0</div>
+                    <div class="stat-label">Neutral Sentiment</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-8">
+                <!-- Input Options -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="inputTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button">Manual Input</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="csv-tab" data-bs-toggle="tab" data-bs-target="#csv" type="button">CSV Upload</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="inputTabsContent">
+                            <!-- Manual Input Tab -->
+                            <div class="tab-pane fade show active" id="manual" role="tabpanel">
+                                <div class="mb-3">
+                                    <label for="commentText" class="form-label">Enter comment for analysis:</label>
+                                    <textarea class="form-control" id="commentText" rows="4" placeholder="Type or paste a comment here..."></textarea>
+                                </div>
+                                <button class="btn btn-primary" id="analyze-btn">
+                                    <i class="fas fa-analytics me-1"></i> Analyze Comment
+                                </button>
+                            </div>
+                            
+                            <!-- CSV Upload Tab -->
+                            <div class="tab-pane fade" id="csv" role="tabpanel">
+                                <div class="upload-area" id="upload-area">
+                                    <i class="fas fa-cloud-upload-alt display-4 text-muted mb-3"></i>
+                                    <h5>Drag & Drop your CSV file here</h5>
+                                    <p class="text-muted">or</p>
+                                    <input type="file" id="fileUpload" class="d-none" accept=".csv">
+                                    <button class="btn btn-primary" id="browse-btn">
+                                        <i class="fas fa-file-csv me-1"></i> Browse Files
+                                    </button>
+                                    <p class="small text-muted mt-3">CSV should contain columns with comments</p>
+                                </div>
+                                <div class="loading-spinner" id="upload-spinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Processing your file... This may take a moment.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Analysis -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-comment-dots me-2"></i> Comments Analysis
+                            <span class="badge bg-primary ms-2" id="comments-count">0 comments</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="comments-container">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-comments fa-3x mb-3"></i>
+                                <p>No comments analyzed yet. Upload a CSV or enter a comment to begin.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-4">
+                <!-- Sentiment Chart -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie me-2"></i> Sentiment Distribution
+                    </div>
+                    <div class="card-body">
+                        <canvas id="sentimentChart" height="250"></canvas>
+                    </div>
+                </div>
+
+                <!-- Word Cloud -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-cloud me-2"></i> Word Cloud
+                    </div>
+                    <div class="card-body">
+                        <img id="wordCloudImg" src="" alt="Word Cloud will appear here after analysis" class="img-fluid">
+                        <p class="small text-muted mt-2">Most frequently used words in comments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Ministry of Corporate Affairs</h5>
+                    <p>E-Consultation Sentiment Analysis Platform</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Home</a></li>
+                        <li><a href="#" class="text-white">About</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone me-2"></i> +91 11 29581241</li>
+                        <li><i class="fas fa-envelope me-2"></i> sih@aicte-india.org</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> New Delhi, India</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 bg-light">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">© 2023-24 Smart India Hackathon. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentSessionId = null;
+        let sentimentChart = null;
+        const API_BASE_URL = "http://127.0.0.1:8000";
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            initializeSentimentChart();
+        });
+
+        // Set up all event listeners
+        function initializeEventListeners() {
+            // File upload handling
+            document.getElementById('browse-btn').addEventListener('click', () => {
+                document.getElementById('fileUpload').click();
+            });
+            
+            document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
+            
+            // Manual analysis handling
+            document.getElementById('analyze-btn').addEventListener('click', analyzeManualInput);
+            
+            // Drag and drop for file upload
+            const uploadArea = document.getElementById('upload-area');
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#e9ecef';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.backgroundColor = '#f8f9fa';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f8f9fa';
+                
+                if (e.dataTransfer.files.length) {
+                    document.getElementById('fileUpload').files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+            
+            // Help button
+            document.getElementById('help-btn').addEventListener('click', () => {
+                alert('This tool allows you to analyze comments for sentiment. You can either enter text manually or upload a CSV file containing comments. The system will analyze the sentiment, generate summaries, and create visualizations.');
+            });
+        }
+
+        // Initialize sentiment chart
+        function initializeSentimentChart() {
+            const ctx = document.getElementById('sentimentChart').getContext('2d');
+            sentimentChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Positive', 'Negative', 'Neutral'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#198754', '#dc3545', '#ffc107'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+tooltip: {
+    callbacks: {
+        label: function(context) {
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = total ? ((context.raw / total) * 100).toFixed(1) : 0;
+            return `${context.label}: ${context.raw} (${percentage}%)`;
+        }
+  }
+}
+                    }
+                }
+            });
+        }
+
+        // Update sentiment chart
+        function updateSentimentChart(positive, negative, neutral) {
+            if (sentimentChart) {
+                sentimentChart.data.datasets[0].data = [positive, negative, neutral];
+                sentimentChart.update();
+            }
+            
+            // Update stats cards
+            document.getElementById('total-comments').textContent = positive + negative + neutral;
+            document.getElementById('positive-comments').textContent = positive;
+            document.getElementById('negative-comments').textContent = negative;
+            document.getElementById('neutral-comments').textContent = neutral;
+        }
+
+        // Handle file upload
+        async function handleFileUpload() {
+            const fileInput = document.getElementById('fileUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            // Show loading spinner
+            document.getElementById('upload-spinner').style.display = 'block';
+            document.getElementById('upload-area').style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/upload_csv`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || `Server returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Store the session ID
+                currentSessionId = data.session_id;
+                
+                // Update UI with the analysis results
+                updateAnalysisResults(data);
+                
+                // Load comments
+                loadSessionData();
+                
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert(`Error processing file: ${error.message}`);
+            } finally {
+                // Hide loading spinner
+                document.getElementById('upload-spinner').style.display = 'none';
+                document.getElementById('upload-area').style.display = 'block';
+                
+                // Reset file input
+                fileInput.value = '';
+            }
+        }
+
+        // Analyze manual input
+        async function analyzeManualInput() {
+            const textArea = document.getElementById('commentText');
+            const text = textArea.value.trim();
+            
+            if (!text) {
+                alert('Please enter some text to analyze');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('text', text);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/analyze_text`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || `Server returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Store the session ID
+                currentSessionId = data.session_id;
+                
+                // Update UI with the analysis results
+                updateAnalysisResults({
+                    session_id: data.session_id,
+                    summary: {
+                        total_comments: 1,
+                        positive_count: data.sentiment === 'positive' ? 1 : 0,
+                        negative_count: data.sentiment === 'negative' ? 1 : 0,
+                        neutral_count: data.sentiment === 'neutral' ? 1 : 0
+                    },
+                    wordcloud_image: data.wordcloud_image
+                });
+                
+                // Display the single comment
+                displayComments([{
+                    text: text,
+                    sentiment: data.sentiment,
+                    sentiment_score: data.sentiment_score,
+                    summary: data.summary
+                }]);
+                
+            } catch (error) {
+                console.error('Error analyzing text:', error);
+                alert(`Error analyzing text: ${error.message}`);
+            }
+        }
+
+        // Update analysis results in UI
+        function updateAnalysisResults(data) {
+            // Update sentiment chart
+            updateSentimentChart(
+                data.summary.positive_count,
+                data.summary.negative_count,
+                data.summary.neutral_count
+            );
+            
+            // Update comments count
+            document.getElementById('comments-count').textContent = `${data.summary.total_comments} comments`;
+            
+            // Update word cloud
+            if (data.wordcloud_image) {
+                document.getElementById('wordCloudImg').src = data.wordcloud_image;
+            }
+        }
+
+        // Load session data
+        async function loadSessionData() {
+            if (!currentSessionId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/session/${currentSessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display comments
+                displayComments(data.comments);
+                
+            } catch (error) {
+                console.error('Error loading session data:', error);
+            }
+        }
+
+        // Display comments in UI
+        function displayComments(comments) {
+            const container = document.getElementById('comments-container');
+            
+            if (!comments || comments.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-comments fa-3x mb-3"></i><p>No comments found</p></div>';
+                return;
+            }
+            
+            let html = '';
+            
+            comments.forEach(comment => {
+                const sentimentClass = `sentiment-${comment.sentiment}`;
+                const sentimentBadge = {
+                    'positive': 'success',
+                    'negative': 'danger',
+                    'neutral': 'warning'
+                }[comment.sentiment];
+                
+                html += `
+                    <div class="comment ${sentimentClass}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <p class="mb-2">${comment.text}</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-${sentimentBadge} sentiment-badge">${comment.sentiment} (${comment.sentiment_score.toFixed(2)})</span>
+                                </div>
+                                <div class="summary-box bg-light p-2 rounded">
+                                    <small class="text-muted"><strong>Summary:</strong> ${comment.summary}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

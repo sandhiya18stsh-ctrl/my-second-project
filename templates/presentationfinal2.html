@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIH 2025 Idea Presentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --sih-blue: #0d6efd;
+            --sih-dark-blue: #034ea2;
+            --sih-orange: #fd7e14;
+            --sih-light: #f8f9fa;
+            --sih-dark: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+            padding-bottom: 80px;
+        }
+        
+        .slide {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1000px;
+            min-height: 500px;
+        }
+        
+        .active-slide {
+            display: block;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--sih-dark-blue) 0%, var(--sih-blue) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        
+        .title-page {
+            text-align: center;
+            padding-top: 40px;
+        }
+        
+        .title-page h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--sih-dark-blue);
+            margin-bottom: 20px;
+        }
+        
+        .title-page h2 {
+            font-size: 1.8rem;
+            color: var(--sih-orange);
+            margin-bottom: 30px;
+        }
+        
+        .info-badge {
+            background-color: var(--sih-orange);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 5px;
+            display: inline-block;
+        }
+        
+        .content-box {
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--sih-blue);
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .tech-icon {
+            font-size: 2.5rem;
+            color: var(--sih-blue);
+            margin-bottom: 15px;
+        }
+        
+        .nav-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: var(--sih-orange);
+            width: 0%;
+            z-index: 101;
+            transition: width 0.3s ease;
+        }
+        
+        .flow-chart {
+            width: 100%;
+            max-width: 700px;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .impact-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .impact-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--sih-blue);
+            margin-bottom: 10px;
+        }
+        
+        .reference-link {
+            background: #f1f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--sih-blue);
+        }
+        
+        .architecture-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .architecture-step {
+            text-align: center;
+            padding: 15px;
+            background: #e9f2ff;
+            border-radius: 10px;
+            margin: 0 10px;
+            width: 120px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .architecture-arrow {
+            font-size: 24px;
+            color: var(--sih-blue);
+            margin: 0 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .architecture-container {
+                flex-direction: column;
+            }
+            .architecture-arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .slide {
+                display: block;
+                box-shadow: none;
+                margin: 0;
+                page-break-after: always;
+            }
+            .nav-buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress-bar"></div>
+
+    <!-- Title Slide -->
+    <div class="slide active-slide" id="slide1">
+        <div class="title-page">
+            <h1>SMART INDIA HACKATHON 2025</h1>
+            <div class="content-box">
+                <h2>Sentiment Analysis for E-Consultation Module</h2>
+                <p class="lead">AI-powered analysis of public feedback on legislative drafts</p>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-md-6">
+                    <div class="info-badge">Problem Statement ID: SIH25035</div>
+                    <div class="info-badge">Theme: Miscellaneous</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-badge">PS Category: Software</div>
+                    
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h3 class="text-primary">Team DIGITAL SAVIOURS</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Idea Title Slide -->
+    <div class="slide" id="slide2">
+        <div class="header">
+            <h3><i class="fas fa-lightbulb me-2"></i> IDEA TITLE</h3>
+        </div>
+        
+        <h4 class="mt-4 mb-4">AI-Powered Sentiment Analysis Platform for E-Consultation Module</h4>
+        
+        <div class="content-box">
+            <h5>Proposed Solution:</h5>
+            <ul>
+                <li>Web-based platform for analyzing public feedback on legislative drafts</li>
+                <li>AI-powered sentiment analysis using advanced NLP techniques</li>
+                <li>Automated summarization of key points from comments</li>
+                <li>Interactive visualization of sentiment trends and word frequency</li>
+            </ul>
+        </div>
+        
+        <div class="content-box">
+            <h5>How it addresses the problem:</h5>
+            <ul>
+                <li>Reduces manual effort in analyzing large volumes of comments</li>
+                <li>Identifies overall sentiment trends and key concerns</li>
+                <li>Provides actionable insights through automated summarization</li>
+                <li>Visual representation helps in quick understanding of public opinion</li>
+            </ul>
+        </div>
+        
+        <div class="content-box">
+            <h5>Innovation and uniqueness:</h5>
+            <ul>
+                <li>Combines multiple NLP techniques for accurate sentiment analysis</li>
+                <li>Context-aware summarization specific to legislative language</li>
+                <li>Interactive dashboard with multiple visualization options</li>
+                <li>Support for both CSV upload and manual comment entry</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Technical Approach Slide -->
+    <div class="slide" id="slide3">
+        <div class="header">
+            <h3><i class="fas fa-cogs me-2"></i> TECHNICAL APPROACH</h3>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5>Technologies Used:</h5>
+                <div class="text-center">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="tech-icon">
+                                <i class="fab fa-python"></i>
+                            </div>
+                            <p>Python</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="tech-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <p>FastAPI</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="tech-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <p>SQLite</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-4">
+                            <div class="tech-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <p>Chart.js</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="tech-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <p>NLTK</p>
+                        </div>
+                        <div class="col-4">
+                            <div class="tech-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <p>WordCloud</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h5>Implementation Process:</h5>
+                <ol>
+                    <li>Data ingestion (CSV upload or manual input)</li>
+                    <li>Text preprocessing and cleaning</li>
+                    <li>Sentiment analysis using VADER and custom models</li>
+                    <li>Text summarization using TF-IDF and extractive methods</li>
+                    <li>Word cloud generation from processed text</li>
+                    <li>Visualization of results in interactive dashboard</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h5>System Architecture:</h5>
+            <div class="architecture-container">
+                <div class="architecture-step">
+                    <i class="fas fa-file-csv fa-2x mb-2 text-primary"></i>
+                    <div>CSV Upload</div>
+                </div>
+                <div class="architecture-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="architecture-step">
+                    <i class="fas fa-keyboard fa-2x mb-2 text-primary"></i>
+                    <div>Manual Input</div>
+                </div>
+                <div class="architecture-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="architecture-step">
+                    <i class="fas fa-cogs fa-2x mb-2 text-primary"></i>
+                    <div>Processing</div>
+                </div>
+                <div class="architecture-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="architecture-step">
+                    <i class="fas fa-chart-line fa-2x mb-2 text-primary"></i>
+                    <div>Analysis</div>
+                </div>
+                <div class="architecture-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="architecture-step">
+                    <i class="fas fa-chart-pie fa-2x mb-2 text-primary"></i>
+                    <div>Results</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feasibility and Viability Slide -->
+    <div class="slide" id="slide4">
+        <div class="header">
+            <h3><i class="fas fa-task-check me-2"></i> FEASIBILITY AND VIABILITY</h3>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="content-box">
+                    <h5>Feasibility Analysis:</h5>
+                    <ul>
+                        <li>Uses open-source technologies with no licensing costs</li>
+                        <li>Modular architecture allows for easy maintenance</li>
+                        <li>Scalable design to handle large volumes of comments</li>
+                        <li>Minimal hardware requirements for deployment</li>
+                    </ul>
+                </div>
+                
+                <div class="content-box">
+                    <h5>Potential Challenges:</h5>
+                    <ul>
+                        <li>Handling ambiguous or sarcastic comments</li>
+                        <li>Processing comments in multiple languages</li>
+                        <li>Ensuring data privacy and security</li>
+                        <li>Integration with existing MCA systems</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="content-box">
+                    <h5>Risk Mitigation Strategies:</h5>
+                    <ul>
+                        <li>Implement hybrid sentiment analysis for better accuracy</li>
+                        <li>Add support for multilingual processing in future versions</li>
+                        <li>Follow data encryption and privacy best practices</li>
+                        <li>Design API-first for easy integration with existing systems</li>
+                        <li>Provide comprehensive documentation and support</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <canvas id="feasibilityChart" width="300" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact and Benefits Slide -->
+    <div class="slide" id="slide5">
+        <div class="header">
+            <h3><i class="fas fa-chart-line me-2"></i> IMPACT AND BENEFITS</h3>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="content-box">
+                    <h5>Potential Impact:</h5>
+                    <ul>
+                        <li>Significant reduction in time required to analyze public feedback</li>
+                        <li>More accurate identification of public sentiment trends</li>
+                        <li>Improved transparency in the legislative process</li>
+                        <li>Data-driven decision making for policy improvements</li>
+                    </ul>
+                </div>
+                
+                <div class="content-box">
+                    <h5>Target Audience:</h5>
+                    <ul>
+                        <li>Ministry of Corporate Affairs officials</li>
+                        <li>Policy makers and legislative drafters</li>
+                        <li>Public consultation teams</li>
+                        <li>Stakeholders providing feedback on legislation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="content-box">
+                    <h5>Key Benefits:</h5>
+                    <ul>
+                        <li>Increased efficiency in processing public feedback</li>
+                        <li>Cost savings through automation of manual processes</li>
+                        <li>Enhanced public engagement in policy making</li>
+                        <li>Improved quality of legislation through better feedback analysis</li>
+                    </ul>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <div class="impact-box">
+                            <div class="impact-number">70%</div>
+                            <div>Time Savings</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="impact-box">
+                            <div class="impact-number">90%</div>
+                            <div>Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Research and References Slide -->
+    <div class="slide" id="slide6">
+        <div class="header">
+            <h3><i class="fas fa-book me-2"></i> RESEARCH AND REFERENCES</h3>
+        </div>
+        
+        <div class="mt-4">
+            <div class="reference-link">
+                <h5>Natural Language Processing with Python</h5>
+                <p>Steven Bird, Ewan Klein, and Edward Loper - O'Reilly Media</p>
+            </div>
+            
+            <div class="reference-link">
+                <h5>VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text</h5>
+                <p>C.J. Hutto and Eric Gilbert - Georgia Institute of Technology</p>
+            </div>
+            
+            <div class="reference-link">
+                <h5>FastAPI Documentation</h5>
+                <p>https://fastapi.tiangolo.com/</p>
+            </div>
+            
+            <div class="reference-link">
+                <h5>Text Summarization Techniques: A Brief Survey</h5>
+                <p>Mehdi Allahyari et al. - University of Georgia</p>
+            </div>
+            
+            <div class="reference-link">
+                <h5>Ministry of Corporate Affairs - E-Consultation Module</h5>
+                <p>https://www.mca.gov.in/</p>
+            </div>
+        </div>
+        
+        <div class="content-box mt-4">
+            <h5>Research Methodology:</h<h5>Research Methodology:</h5>
+            <ul>
+                <li>Analyzed problem statement and current manual process</li>
+                <li>Reviewed existing sentiment analysis approaches and libraries</li>
+                <li>Evaluated multiple text preprocessing and summarization techniques</li>
+                <li>Conducted comparative study of visualization frameworks</li>
+                <li>Designed architecture ensuring scalability and modularity</li>
+                <li>Tested solution with sample data to validate accuracy</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Thank You Slide -->
+    <div class="slide" id="slide7">
+        <div class="title-page">
+            <h1 class="text-success mb-4">Thank You!</h1>
+            <div class="content-box">
+                <h2>Team Digital Warriors</h2>
+                <p class="lead">Innovating for a Transparent and Data-Driven Legislative Process</p>
+            </div>
+            <div class="mt-4">
+                <i class="fas fa-hands-helping fa-3x text-primary"></i>
+                <p class="mt-3">We look forward to collaborating and implementing this solution!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <button class="btn btn-primary me-2" id="prevBtn"><i class="fas fa-arrow-left"></i> Previous</button>
+        <button class="btn btn-primary" id="nextBtn">Next <i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress-bar');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active-slide'));
+        slides[index].classList.add('active-slide');
+        progressBar.style.width = ((index + 1) / slides.length) * 100 + '%';
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentSlide > 0) {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+    });
+
+    // ✅ Keyboard Navigation
+    document.addEventListener('keydown', function (event) {
+        if (event.key === "ArrowRight" || event.key === " ") {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+        if (event.key === "ArrowLeft") {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+    });
+
+    // Initialize first slide and progress bar
+    showSlide(currentSlide);
+
+    // Feasibility Chart
+    const ctx = document.getElementById('feasibilityChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Technical Feasibility', 'Cost Feasibility', 'Operational Feasibility'],
+                datasets: [{
+                    data: [80, 65, 90],
+                    backgroundColor: ['#0d6efd', '#fd7e14', '#20c997'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    }
+</script>
+        
+</body>
+</html>
