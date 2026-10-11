@@ -14,6 +14,7 @@ import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from nltk import download
+nltk.download("punkt_tab", quiet=True)
 from collections import Counter
 import matplotlib
 matplotlib.use('Agg')
