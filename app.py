@@ -30,8 +30,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import json
 import os
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-import torch
+
 
 # Download NLTK data
 try:
@@ -362,7 +361,7 @@ app.add_middleware(
 )
 
 templates = Jinja2Templates(directory="templates")
-sentiment_analyzer = SentimentAnalyzer(use_transformers=True)
+sentiment_analyzer = SentimentAnalyzer(use_transformers=False)
 csv_processor = CSVProcessor()
 
 # Dependency to get DB session
